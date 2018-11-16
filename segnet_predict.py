@@ -8,11 +8,11 @@ from keras.models import load_model
 from sklearn.preprocessing import LabelEncoder  
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-TEST_SET = ['1.png','2.png','3.png']
+TEST_SET = ['test.png']
 
 image_size = 256
 
-classes = [0. ,  1.,  2.,   3.  , 4.]  
+classes = [0. ,  1.,  2.,   3., 4.]
   
 labelencoder = LabelEncoder()  
 labelencoder.fit(classes) 
@@ -48,8 +48,9 @@ def predict(args):
         mask_whole = np.zeros((padding_h,padding_w),dtype=np.uint8)
         for i in range(padding_h//stride):
             for j in range(padding_w//stride):
-                crop = padding_img[:3,i*stride:i*stride+image_size,j*stride:j*stride+image_size]
-                _,ch,cw = crop.shape
+                crop = padding_img[i*stride:i*stride+image_size,j*stride:j*stride+image_size,:3]
+                ch,cw,_ = crop.shape
+                print i,j,crop.shape
                 if ch != 256 or cw != 256:
                     print 'invalid size!'
                     continue

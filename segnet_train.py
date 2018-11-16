@@ -3,9 +3,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import argparse
-import numpy as np  
+import numpy as np
+from keras import optimizers
 from keras.models import Sequential  
-from keras.layers import Conv2D,MaxPooling2D,UpSampling2D,BatchNormalization,Reshape,Permute,Activation  
+from keras.layers import Conv2D,MaxPooling2D,UpSampling2D,BatchNormalization,Reshape,Permute,Activation,Dropout
 from keras.utils.np_utils import to_categorical  
 from keras.preprocessing.image import img_to_array  
 from keras.callbacks import ModelCheckpoint  
@@ -151,6 +152,7 @@ def SegNet():
     model.add(BatchNormalization())
     model.add(Conv2D(512, (3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(BatchNormalization())
+    model.add(Dropout(0.5))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     #(16,16)
 
@@ -160,6 +162,7 @@ def SegNet():
     model.add(BatchNormalization())
     model.add(Conv2D(512, (3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(BatchNormalization())
+    model.add(Dropout(0.5))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     #(8,8)
 
@@ -206,8 +209,9 @@ def SegNet():
     model.add(Reshape((n_label, img_w*img_h )))
     #axis=1和axis=2互换位置，等同于np.swapaxes(layer,1,2)  
     model.add(Permute((2,1)))  
-    model.add(Activation('softmax'))  
-    model.compile(loss='categorical_crossentropy',optimizer='sgd',metrics=['accuracy'])  
+    model.add(Activation('softmax'))
+    sgd = optimizers.SGD(lr=0.005, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss='categorical_crossentropy',optimizer=sgd,metrics=['accuracy'])
     model.summary()  
     return model  
   
